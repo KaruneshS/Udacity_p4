@@ -42,21 +42,36 @@ var markerObjs = [];
 
 function AppViewModel() {
     var self = this;
- 
     self.filter = ko.observable("");
     self.data = ko.observableArray(markers);
 
     self.filterData = ko.computed(function() {
         var filter = self.filter().toLowerCase();
+        var markerIndexList = [];
         if (!filter) {
+            for(var i=0; i<markerObjs.length; i++){
+                markerObjs[i].setVisible(true);    
+            }
             return self.data();
         } else {
-            return ko.utils.arrayFilter(markers, function(marker) {
-                if (marker.title.toLowerCase().indexOf(filter) >= 0) {
+            var returnCode = ko.utils.arrayFilter(markers, function(marker) {
+                if (marker.title.toLowerCase().indexOf(filter) >= 0) {            
+                    markerIndexList.push(marker.index);
                     return marker;
                 }
             });
+
+            for(var i=0; i<markerObjs.length; i++){
+                if(markerIndexList.indexOf(markers[i].index) >= 0) {
+                    markerObjs[i].setVisible(true);   
+                }
+                else 
+                    markerObjs[i].setVisible(false);    
+            }
+
+            return returnCode;
         }
+        
     }, self);
 
     self.clickMarker = function(){
