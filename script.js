@@ -141,7 +141,8 @@ function bindInfoWindow(marker, map, infowindow, html, index) {
                 infowindow.setContent(content);
             })
             .fail(function(){
-                content = content + "<br/>" + "Contact details not available at this time";               
+                content = content + "<br/>" + "Contact details not available at this time";
+                infowindow.setContent(content);               
             });
 
         infowindow.open(map, this);
@@ -175,5 +176,5 @@ function closeAllInfoWindows() {
  * Error callback for GMap API request
  */
 function mapError() {
-  console.log("Error loading Map API");
+  alert("Error loading Map API");
 }
