@@ -1,5 +1,8 @@
 var map = null;
 var infoWindows = [];
+//For Foursquare
+var clientId = "G2FT403HGUUQJYOTQH3CDRMNVUGGLOUSDPP5PC1C5ZIFQ4MU";
+var clientSecret = "RDYQ13HYX3LA30RCTLLMAV4JCGENSQBOM0OE0W31MHE355AQ";
 var markers = [
     {   
     title: "Vivanta By Taj - Whitefield",
@@ -76,7 +79,7 @@ function AppViewModel() {
 
     self.clickMarker = function(){
         google.maps.event.trigger(markerObjs[this.index], 'click');
-    }
+    };
 
 }
  
@@ -104,34 +107,73 @@ function initMap() {
 
 //Function to initialize markers on Map
 function intializeMarkers(markers_) {
+
 	for(var i=0;i<markers_.length;i++) {
 		var marker = new google.maps.Marker({
 	      position: new google.maps.LatLng(markers_[i].lat, markers_[i].lng),
+          animation: google.maps.Animation.DROP,
 	      map: map
 	    });
 		var infowindow = new google.maps.InfoWindow();
 		var content = "<b>"+markers_[i].title+"<b><br/>"+markers_[i].address;
-		// add an event listener for this marker
-		bindInfoWindow(marker, map, infowindow, content);
-
+        bindInfoWindow(marker, map, infowindow, content, i);
         markerObjs.push(marker);
 	}
 }
 
 //Bind InfoWindow
-function bindInfoWindow(marker, map, infowindow, html) {
+function bindInfoWindow(marker, map, infowindow, html, index) {
     marker.addListener('click', function() {
+        var content = html;
         closeAllInfoWindows();
+        removeAllAnimations();
         map.setCenter(marker.getPosition());
-        infowindow.setContent(html);
+        toggleBounce(marker);
+
+        //Get Phone number using Foursquare API
+        var fs_url = "https://api.foursquare.com/v2/venues/search?ll="+markers[index].lat+","+markers[index].lng+"&client_id="+clientId+"&client_secret="+clientSecret+"&v=20170404&query="+markers[index].title;
+        $.getJSON(fs_url)
+            .done(function(response){
+                content = content + "<br/>";
+                if(response.response.venues[0].contact.phone != undefined)
+                    content = content + "Call: "+response.response.venues[0].contact.phone;
+                else content = content + "Call: Not available";
+                infowindow.setContent(content);
+            })
+            .fail(function(){
+                content = content + "<br/>" + "Contact details not available at this time";               
+            });
+
         infowindow.open(map, this);
         infoWindows.push(infowindow);
     });	
 }
 
+function toggleBounce(marker) {
+    if (marker.getAnimation() !== null) {
+      marker.setAnimation(null);
+    } else {
+      marker.setAnimation(google.maps.Animation.BOUNCE);
+    }
+}
+
 //Close all infowindows
-function closeAllInfoWindows() {
+function removeAllAnimations() {
   for (var i=0;i<infoWindows.length;i++) {
      infoWindows[i].close();
   }
+}
+
+//Remove all animations
+function closeAllInfoWindows() {
+  for (var i=0;i<markerObjs.length;i++) {
+     markerObjs[i].setAnimation(null);
+  }
+}
+
+/**
+ * Error callback for GMap API request
+ */
+function mapError() {
+  console.log("Error loading Map API");
 }

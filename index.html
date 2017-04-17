@@ -30,11 +30,10 @@
 		  </ul>
 		</div>
 	    
-	    <script async defer
-	    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDwlNUrY7sEuKmnITG86PJLcolDbTmRaaQ&callback=initMap">
-	    </script>
 	    <script src="bower_components/jquery/dist/jquery.min.js"></script>
 	    <script src="bower_components/knockout/dist/knockout.js"></script>
-	    <script async type="text/javascript" src="script.js"></script>
+	    <script src="script.js"></script>
+	    <script async defer onerror="mapError()" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDwlNUrY7sEuKmnITG86PJLcolDbTmRaaQ&callback=initMap">
+	    </script>
 	</body>
 </html>

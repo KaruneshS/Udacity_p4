@@ -12,6 +12,10 @@ Functionalities:
 * Filtering the location for ease of navigation
 * Two way binding of view with model
 
+Steps to run the project:
+* Clone the project from git using "git clone <git URI>"
+* Once cloned, open index.html to run the project
+
 References:
 http://knockoutjs.com
 https://developers.google.com/maps/
